@@ -1,0 +1,22 @@
+# Przetwarzanie danych
+numpy
+pandas
+pyarrow
+
+# Wizualizacja
+matplotlib
+seaborn
+
+# Uczenie maszynowe
+scikit-learn
+joblib
+
+# Notebooki
+notebook
+ipykernel
+
+# API i narzędzia
+fastapi
+uvicorn
+pydantic
+python-multipart
