@@ -4,12 +4,12 @@ from pydantic import BaseModel
 import numpy as np
 import pandas as pd
 
-from model_loader import load_model
+from app.services.model_loader import load_model
 
 app = FastAPI(title="Calories per Minute Prediction API")
 
 # Load the trained RandomForest model with preprocessing
-model, MODEL_READY = load_model("models/random_forest_pipeline.joblib")
+model, MODEL_READY = load_model("../../models/random_forest_pipeline.joblib")
 
 
 class InputData(BaseModel):
