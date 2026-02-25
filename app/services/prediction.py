@@ -54,7 +54,7 @@ def predict(model, df):
 
     try:
         prediction  = model.predict(df)
-        return float(prediction [0])
+        return float(prediction[0])
 
     except NotFittedError as e:
         logger.exception('Model is not fitted')
@@ -65,5 +65,5 @@ def predict(model, df):
         raise ValueError(f"Invalid input data: {e}") from e
 
     except Exception as e:
-        logger.exception('Unexpected error during prediction', e)
+        logger.exception('Unexpected error during prediction')
         raise RuntimeError('Prediction failed') from e
