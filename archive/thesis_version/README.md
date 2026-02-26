@@ -13,7 +13,7 @@ Projekt obejmuje kompletny pipeline ML oraz wdrożenie modelu w postaci API z in
 ---
 
 ## 📁 Struktura projektu
-
+```
 ├── data/  
 │   ├── raw/  
 │   │   └── Activities.csv (dane prywatne autora) 
@@ -33,7 +33,7 @@ Projekt obejmuje kompletny pipeline ML oraz wdrożenie modelu w postaci API z in
 ├── requirements.txt  
 ├── requirements-freeze.txt  
 └── README.md  
-
+```
 ---
 
 ## ⚙️ Wymagania

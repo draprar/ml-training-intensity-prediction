@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class InputData(BaseModel):
     Avg_HR: float
@@ -13,19 +13,20 @@ class InputData(BaseModel):
     day_of_week: int
     hour: int
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "Avg_HR": 120.0,
-                "Max_HR": 150.0,
-                "Distance": 5.0,
-                "Steps": 4000,
-                "Avg_Stress": 0.0,
-                "Stress_Change": 0.0,
-                "Total_Reps": 0,
-                "Total_Poses": 0,
-                "Activity_Type": "Walking",
-                "day_of_week": 2,
-                "hour": 12
+    model_config = ConfigDict(
+            json_schema_extra = {
+                "example": {
+                    "Avg_HR": 120.0,
+                    "Max_HR": 150.0,
+                    "Distance": 5.0,
+                    "Steps": 4000,
+                    "Avg_Stress": 0.0,
+                    "Stress_Change": 0.0,
+                    "Total_Reps": 0,
+                    "Total_Poses": 0,
+                    "Activity_Type": "Walking",
+                    "day_of_week": 2,
+                    "hour": 12
+                }
             }
-        }
+        )
