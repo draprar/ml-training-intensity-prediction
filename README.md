@@ -1,171 +1,260 @@
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-green)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+![CI](https://github.com/draprar/ml-training-intensity-prediction/actions/workflows/ci.yaml/badge.svg)
+
 # Training Intensity Prediction (Garmin Data)
 
-Model uczenia maszynowego do predykcji intensywności treningu (kcal/min) na podstawie danych z zegarka Garmin.  
-Projekt obejmuje pełny proces analityczny — od przygotowania danych, przez budowę modelu, aż po wdrożenie usługi predykcyjnej z interfejsem użytkownika.
+End-to-end machine learning pipeline and inference service for predicting training intensity (`kcal/min`) using Garmin activity data.
+
+This project demonstrates a complete ML workflow:
+- Data exploration & preprocessing
+- Model training (Random Forest pipeline)
+- Model serialization
+- Production-ready FastAPI inference service
+- Lightweight frontend UI
 
 ---
 
-## 📌 Cel projektu
+## 📌 Project Overview
 
-Celem projektu jest opracowanie modelu uczenia maszynowego przewidującego intensywność treningu fizycznego (kcal/min) na podstawie danych pozyskanych z zegarka Garmin.  
-Projekt obejmuje kompletny pipeline ML oraz wdrożenie modelu w postaci API z interfejsem użytkownika, umożliwiającym praktyczne wykorzystanie rozwiązania.
+The goal is to build a reproducible end-to-end machine learning pipeline and deploy it as a REST API with a simple web interface.
+
+The model predicts **calories per minute** based on:
+- Heart rate metrics
+- Activity type
+- Distance / steps
+- Stress metrics
+- Time-based features (hour, day of week)
+
+The project separates modeling, service layer, configuration, and presentation layer to follow production-ready backend practices.
 
 ---
 
-## 📁 Struktura projektu
-
+## 📁 Project Structure
+```
 .
-├── data/  
-│   ├── raw/  
-│   │   └── Activities.csv (dane prywatne autora) 
-│   └── processed/  
-│       └── activities_model_ready.parquet (dane przetworzone, zanonimizowane)
-│  
-├── models/  
-│   ├── (artefakty modelu nie są wersjonowane w repozytorium) 
-│  
-├── notebooks/  
-│   ├── 00_quickstart_guide.ipynb  
-│   ├── 01_eda_preprocessing.ipynb  
-│   └── 02_modeling.ipynb  
-│  
-├── api.py  
-│  
-├── requirements.txt  
-├── requirements-freeze.txt  
-└── README.md  
+├── app/
+│   ├── main.py                # FastAPI app (lifespan-based startup)
+│   ├── config.py              # Paths & configuration
+│   ├── api/                   # Routes & Pydantic schemas
+│   ├── services/              # Model loading & prediction logic
+│   ├── core/                  # Logging configuration
+│   └── ui/                    # Templates + static files
+│
+├── data/
+│   ├── raw/                   # Private Garmin exports
+│   └── processed/             # Model-ready datasets
+│
+├── models/                    # Serialized model artifacts (not versioned)
+├── notebooks/                 # EDA & modeling notebooks
+├── tests/                     # Pytest test suite
+│
+├── requirements.txt
+├── requirements-freeze.txt
+└── README.md
+```
+---
+
+## ⚙️ Requirements
+
+- Python 3.9+
+- pip
+- (recommended) virtual environment
+- Uvicorn
+- Jupyter Notebook / JupyterLab (for modeling)
 
 ---
 
-## ⚙️ Wymagania
+## 📦 Installation
 
-- Python ≥ 3.9  
-- pip  
-- Jupyter Notebook / JupyterLab  
-- Windows / Linux / macOS  
-- (opcjonalnie) Uvicorn do uruchomienia API
+1. Create virtual environment
+```
+python -m venv .venv
+```
 
----
+Activate:
 
-## 📦 Instalacja
+**Windows**
+```
+.venv\Scripts\activate
+```
+**Linux / macOS**
+```
+source .venv/bin/activate
+```
 
-Instalacja zależności:
+2. Install dependencies
 ```
 pip install -r requirements.txt
 ```
-Plik `requirements-freeze.txt` zawiera pełny snapshot środowiska deweloperskiego i może być użyty do odtworzenia identycznej konfiguracji.
 
----
-
-## 🧪 Weryfikacja środowiska
-
-Notebook `00_quickstart_guide.ipynb` zawiera komórkę sprawdzającą wersje kluczowych bibliotek:
+If you need exact environment replication:
 ```
-import sys, platform, numpy as np, pandas as pd, sklearn, matplotlib, seaborn as sns
-
-print("Python:", sys.version)  
-print("Platform:", platform.platform())  
-print("NumPy:", np.__version__)  
-print("pandas:", pd.__version__)  
-print("scikit-learn:", sklearn.__version__)  
-print("Matplotlib:", matplotlib.__version__)  
-print("Seaborn:", sns.__version__)  
+pip install -r requirements-freeze.txt
 ```
 
 ---
 
-## 🧠 Model
+## 🧠 Model Training
 
-Model został wytrenowany jako Random Forest Regressor osadzony w pełnym pipeline’ie preprocessingowym (ColumnTransformer, kodowanie kategorii, imputacja braków).
-
-Artefakty generowane po treningu:
-
-- models/random_forest_pipeline.joblib — kompletny pipeline gotowy do predykcji  
-- models/model_metadata.joblib — metadane środowiskowe (wersje bibliotek, opis modelu)
-
-**📈 Wyniki modelu**
-
-Model Random Forest osiąga stabilne wyniki w walidacji krzyżowej.
-Najsilniejszym predyktorem intensywności treningu jest średnie tętno (`Avg HR`), natomiast pozostałe zmienne wnoszą dodatkową, choć mniejszą informację predykcyjną.
-
----
-
-## 🌐 API predykcyjne (FastAPI)
-
-Projekt zawiera usługę predykcyjną dostępną w pliku `api.py`.
-
-### Uruchomienie API:
+1. Place your Garmin export file:
 ```
-uvicorn api:app --reload
+data/raw/Activities.csv
 ```
 
-### Endpoint `/predict`
+2. Run notebooks in order:
+```
+notebooks/01_eda_preprocessing.ipynb
+notebooks/02_modeling.ipynb
+```
 
-- wczytuje pipeline (random_forest_pipeline.joblib),  
-- przyjmuje dane wejściowe w formacie JSON,  
-- konwertuje je do DataFrame,  
-- zwraca przewidywaną intensywność treningu (kcal/min).
+This generates:
+```
+models/random_forest_pipeline.joblib
+models/model_metadata.joblib
+```
 
----
-
-## 🖥️ Interfejs użytkownika (UI)
-
-UI dostępny jest pod adresem:
-
-http://localhost:8000/
-
-### Funkcjonalności:
-
-- wybór typu aktywności,  
-- dynamiczne wyświetlanie wymaganych pól (np. kroki dla chodzenia, stres dla jogi),  
-- walidacja danych,  
-- predykcja bez przeładowania strony,  
-- wynik prezentowany w czytelnym boxie.
-
-**Uwaga:**
-
-Artefakty modelu (.joblib) nie są wersjonowane w repozytorium.
-Aby uruchomić API, należy najpierw wytrenować model w notebooku 02_modeling.ipynb, co wygeneruje wymagane pliki w katalogu models/.
----
-
-## 📊 Dane wejściowe
-
-- Surowe dane: `data/raw/Activities.csv`  
-- Dane przetworzone: `data/processed/activities_model_ready.parquet`
-
-Dane pochodzą z eksportu aktywności z platformy Garmin Connect.
-
-**Uwaga:**
-
-Surowe dane treningowe (`Activities.csv`) nie są udostępniane publicznie ze względu na prywatny charakter informacji (dane osobowe i zdrowotne).
-
-Aby odtworzyć projekt:
-- Umieść własny plik `Activities.csv` w katalogu `data/raw/`.
-- Uruchom notebook `01_eda_preprocessing.ipynb`.
-- Następnie uruchom `02_modeling.ipynb`.
+*Model artifacts are not versioned in the repository.*
 
 ---
 
-## 📚 Notebooki
+## 🏗 Architecture
 
-1. **00_quickstart_guide.ipynb**  
-   Konfiguracja środowiska, instrukcje i informacje organizacyjne.
+- RandomForestRegressor wrapped in full preprocessing Pipeline
+- Preprocessing handled via ColumnTransformer
+- Model serialized with joblib
+- Loaded at startup using FastAPI lifespan
+- Stored in app.state for shared access
+- REST inference endpoint (/predict)
 
-2. **01_eda_preprocessing.ipynb**  
-   Analiza eksploracyjna danych i przygotowanie zbioru do modelowania.
+---
+## 🌐 Running the API
 
-3. **02_modeling.ipynb**  
-   Budowa, trenowanie i ewaluacja modeli ML.
+Start the application:
+```
+uvicorn app.main:app --reload
+```
+
+Available endpoints:
+- UI - http://127.0.0.1:8000/ui
+- Health check - http://127.0.0.1:8000/health
+- Swagger docs - http://127.0.0.1:8000/docs
 
 ---
 
-## 🏁 Podsumowanie
+## 🔌 Example API Request
 
-Projekt dostarcza kompletny pipeline analityczny oraz gotowe środowisko inferencyjne umożliwiające wykonywanie predykcji intensywności treningu.  
-Dzięki integracji modelu z API i interfejsem użytkownika rozwiązanie może być wykorzystywane zarówno w celach badawczych, jak i praktycznych.
+Example JSON payload
+
+```
+{
+  "Avg_HR": 120.0,
+  "Max_HR": 150.0,
+  "Distance": 5.0,
+  "Steps": 4000,
+  "Avg_Stress": 0.0,
+  "Stress_Change": 0.0,
+  "Total_Reps": 0,
+  "Total_Poses": 0,
+  "Activity_Type": "Walking",
+  "day_of_week": 2,
+  "hour": 12
+}
+```
+
+Example `curl` request
+
+```
+curl -X POST "http://127.0.0.1:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "Avg_HR": 120.0,
+           "Max_HR": 150.0,
+           "Distance": 5.0,
+           "Steps": 4000,
+           "Avg_Stress": 0.0,
+           "Stress_Change": 0.0,
+           "Total_Reps": 0,
+           "Total_Poses": 0,
+           "Activity_Type": "Walking",
+           "day_of_week": 2,
+           "hour": 12
+         }'
+```
+
+Example response
+```
+{
+  "calories_per_min": 8.1234
+}
+```
 
 ---
 
-## 📄 Licencja
+## 🖥 UI Features
 
-Projekt został opracowany jako część pracy dyplomowej.
+- Activity selection
+- Dynamic form fields
+- Client-side validation
+- Async prediction (Axios)
+- Error handling with status-specific messages
+- No page reload
+
+---
+
+## ⚠️ Error Handling
+
+- 400 — validation or input-related error
+- 503 — model not loaded
+- 500 — internal server error
+
+Errors are logged using structured logging configuration.
+
+---
+
+## 🧪 Running Tests
+
+```
+pytest -q
+```
+
+Test coverage includes:
+- Model loading behavior
+- API endpoint responses
+- Error handling scenarios
+
+---
+
+## 🧰 Tech Stack
+
+- FastAPI
+- Pydantic v2
+- scikit-learn
+- Pandas / NumPy
+- Joblib
+- Bootstrap 5
+- Axios
+- Pytest
+
+---
+
+## 🔒 Data Privacy
+
+Raw Garmin data (`Activities.csv`) is not included in this repository due to personal and health-related information.
+
+To reproduce results:
+- Provide your own Garmin export
+- Follow the notebook workflow
+
+---
+
+## 📄 License
+
+MIT License.
+
+---
+
+## 👤 Author
+
+Developed as part of an academic project and extended into a production-style ML API.

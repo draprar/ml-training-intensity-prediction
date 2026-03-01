@@ -3,12 +3,13 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel
 import numpy as np
 import pandas as pd
-import joblib
+
+from app.services.model_loader import load_model
 
 app = FastAPI(title="Calories per Minute Prediction API")
 
-# Ładowanie wytrenowanego modelu RandomForest wraz z preprocessingiem
-model = joblib.load("models/random_forest_pipeline.joblib")
+# Load the trained RandomForest model with preprocessing
+model, MODEL_READY = load_model("../../models/random_forest_pipeline.joblib")
 
 
 class InputData(BaseModel):
@@ -24,6 +25,11 @@ class InputData(BaseModel):
     day_of_week: int
     hour: int
 
+@app.get("/health")
+def health():
+    return {
+        "status": "ok" if MODEL_READY else "model_not_loaded"
+    }
 
 @app.post("/predict")
 def predict(data: InputData):
