@@ -7,6 +7,9 @@
 
 End-to-end machine learning pipeline and inference service for predicting training intensity (`kcal/min`) using Garmin activity data.
 
+**Note:** The original thesis version is archived in [`archive/thesis_version`](archive/thesis_version).  
+The current repository includes refactored notebooks, reorganized files, and an extended API layer for inference and testing.
+
 This project demonstrates a complete ML workflow:
 - Data exploration & preprocessing
 - Model training (Random Forest pipeline)
