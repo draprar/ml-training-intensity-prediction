@@ -87,12 +87,17 @@ Activate:
 source .venv/bin/activate
 ```
 
-2. Install dependencies
+2. Install runtime dependencies
 ```
 pip install -r requirements.txt
 ```
 
-If you need exact environment replication:
+Install developer dependencies (tests, lint, typing, security scans):
+```
+pip install -r requirements-dev.txt
+```
+
+If you need exact environment replication for the original research environment:
 ```
 pip install -r requirements-freeze.txt
 ```
@@ -216,10 +221,14 @@ Errors are logged using structured logging configuration.
 
 ---
 
-## 🧪 Running Tests
+## 🧪 Running Quality Checks
 
 ```
-pytest -q
+pytest
+ruff check .
+mypy app tests
+bandit -q -r app
+pip-audit -r requirements.txt
 ```
 
 Test coverage includes:
