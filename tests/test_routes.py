@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
 import app.api.routes as routes
 
 VALID_PAYLOAD = {
@@ -23,7 +24,7 @@ def make_app():
 
 def test_health_not_ready():
     app = make_app()
-    setattr(app.state, "model_ready", False)
+    app.state.model_ready = False
     client = TestClient(app)
 
     response = client.get("/health")
@@ -33,7 +34,7 @@ def test_health_not_ready():
 
 def test_health_ready():
     app = make_app()
-    setattr(app.state, "model_ready", True)
+    app.state.model_ready = True
     client = TestClient(app)
 
     response = client.get("/health")
@@ -43,7 +44,7 @@ def test_health_ready():
 
 def test_predict_model_not_ready():
     app = make_app()
-    setattr(app.state, "model_ready", False)
+    app.state.model_ready = False
     client = TestClient(app)
 
     response = client.post("/predict", json=VALID_PAYLOAD)
@@ -53,8 +54,8 @@ def test_predict_model_not_ready():
 
 def test_predict_success(monkeypatch):
     app = make_app()
-    setattr(app.state, "model_ready", True)
-    setattr(app.state, "model", object())
+    app.state.model_ready = True
+    app.state.model = object()
 
     monkeypatch.setattr(routes, "prepare_input_df", lambda _: "df")
     monkeypatch.setattr(routes, "predict", lambda *_: 3.14)
@@ -67,8 +68,8 @@ def test_predict_success(monkeypatch):
 
 def test_predict_validation_error(monkeypatch):
     app = make_app()
-    setattr(app.state, "model_ready", True)
-    setattr(app.state, "model", object())
+    app.state.model_ready = True
+    app.state.model = object()
 
     def fake_prepare(_):
         raise ValueError("bad input")
@@ -83,8 +84,8 @@ def test_predict_validation_error(monkeypatch):
 
 def test_predict_runtime_error(monkeypatch):
     app = make_app()
-    setattr(app.state, "model_ready", True)
-    setattr(app.state, "model", object())
+    app.state.model_ready = True
+    app.state.model = object()
 
     monkeypatch.setattr(routes, "prepare_input_df", lambda _: "df")
     monkeypatch.setattr(routes, "predict", lambda *_: (_ for _ in ()).throw(RuntimeError()))
@@ -97,8 +98,8 @@ def test_predict_runtime_error(monkeypatch):
 
 def test_predict_unexpected_error(monkeypatch):
     app = make_app()
-    setattr(app.state, "model_ready", True)
-    setattr(app.state, "model", object())
+    app.state.model_ready = True
+    app.state.model = object()
 
     monkeypatch.setattr(routes, "prepare_input_df", lambda _: "df")
     monkeypatch.setattr(routes, "predict", lambda *_: (_ for _ in ()).throw(Exception()))

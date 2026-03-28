@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from sklearn.exceptions import NotFittedError
 
-from app.services.prediction import prepare_input_df, predict
+from app.services.prediction import predict, prepare_input_df
 
 VALID_PAYLOAD = {
     "Avg_HR": 100.0,
@@ -50,6 +50,25 @@ def test_prepare_input_df_invalid_day(bad_day):
     payload['day_of_week'] = bad_day
     with pytest.raises(ValueError):
         prepare_input_df(payload)
+
+
+@pytest.mark.parametrize(
+    "field,value,expected_message",
+    [
+        ("Avg_HR", "abc", "must be numeric"),
+        ("Max_HR", np.nan, "must be a finite number"),
+        ("Distance", np.inf, "must be a finite number"),
+        ("Steps", -np.inf, "must be a finite number"),
+    ],
+)
+def test_prepare_input_df_rejects_invalid_numeric_values(field, value, expected_message):
+    payload = VALID_PAYLOAD.copy()
+    payload[field] = value
+
+    with pytest.raises(ValueError) as exc:
+        prepare_input_df(payload)
+
+    assert expected_message in str(exc.value)
 
 def test_predict_success():
     class DummyModel:

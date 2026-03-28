@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
+
 from app.main import create_app
+
 
 def test_model_load_success(monkeypatch):
     fake_model = object()

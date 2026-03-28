@@ -1,5 +1,7 @@
 import pytest
+
 import app.services.model_loader as model_loader
+
 
 def test_load_model_file_not_found(tmp_path):
     missing = tmp_path / "no_such_model.joblib"
