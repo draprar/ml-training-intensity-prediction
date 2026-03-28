@@ -57,7 +57,7 @@ function updateFields() {
 activitySelect.addEventListener("change", updateFields);
 
 // Handles form submission:
-// - converts empty fields to 0
+// - includes only visible and non-empty fields
 // - casts numeric values
 // - sends POST request
 // - displays result or error
@@ -66,16 +66,18 @@ form.addEventListener("submit", async function (event) {
 
     resultBox.className = "alert alert-info mt-4 d-none";
 
-    const formData = new FormData(form);
-    const jsonData = Object.fromEntries(formData.entries());
-
-    for (let key in jsonData) {
-        if (jsonData[key] === "") {
-            jsonData[key] = 0;
-        } else if (!isNaN(jsonData[key])) {
-            jsonData[key] = Number(jsonData[key]);
+    const jsonData = {};
+    form.querySelectorAll("input, select").forEach((field) => {
+        const wrapper = field.closest(".d-none");
+        if (wrapper) {
+            return;
         }
-    }
+        const value = field.value;
+        if (value === "") {
+            return;
+        }
+        jsonData[field.name] = !isNaN(value) ? Number(value) : value;
+    });
 
     try {
         const response = await axios.post("/predict", jsonData);
