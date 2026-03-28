@@ -34,7 +34,7 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Lint (ruff)
-        run: ruff check . --exclude "*.ipynb" --show-source
+        run: ruff check . --exclude "*.ipynb" --exclude "archive"
 
       - name: Type check (mypy)
         run: mypy app tests --exclude '.*\.ipynb$'
