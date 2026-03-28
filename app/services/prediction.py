@@ -1,7 +1,9 @@
-from sklearn.exceptions import NotFittedError
+import logging
+from typing import Any
+
 import numpy as np
 import pandas as pd
-import logging
+from sklearn.exceptions import NotFittedError
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +15,8 @@ def prepare_input_df(payload: dict) -> pd.DataFrame:
     # Validate hour
     try:
         hour = int(payload['hour'])
-    except (KeyError, TypeError, ValueError):
-        raise ValueError('hour must be an integer')
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError('hour must be an integer') from exc
 
     if not (0 <= hour <= 23):
         raise ValueError('hour must be in range [0, 23]')
@@ -25,13 +27,13 @@ def prepare_input_df(payload: dict) -> pd.DataFrame:
     # Validate day_of_week
     try:
         day = int(payload['day_of_week'])
-    except (KeyError, TypeError, ValueError):
-        raise ValueError('day_of_week must be an integer')
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError('day_of_week must be an integer') from exc
 
     if not (0 <= day <= 6):
         raise ValueError('day_of_week must be in range [0, 6]')
 
-    df = pd.DataFrame([{
+    features = {
         'Avg HR': payload.get('Avg_HR'),
         'Max HR': payload.get('Max_HR'),
         'Distance': payload.get('Distance', 0),
@@ -44,11 +46,23 @@ def prepare_input_df(payload: dict) -> pd.DataFrame:
         'day_of_week': day,
         'hour_sin': hour_sin,
         'hour_cos': hour_cos
-    }])
+    }
+
+    # Defensive check: API validation should catch this, but we keep service-level guardrails.
+    for key in ('Avg HR', 'Max HR', 'Distance', 'Steps', 'Avg Stress', 'Stress Change', 'Total Reps', 'Total Poses'):
+        value = features[key]
+        try:
+            is_finite = np.isfinite(value)
+        except TypeError as exc:
+            raise ValueError(f'{key} must be numeric') from exc
+        if not is_finite:
+            raise ValueError(f'{key} must be a finite number')
+
+    df = pd.DataFrame([features])
 
     return df
 
-def predict(model, df):
+def predict(model: Any, df: pd.DataFrame) -> float:
     if model is None:
         raise RuntimeError('Model is not available')
 

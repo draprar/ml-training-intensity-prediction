@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
 import logging
 
-from app.config import TEMPLATES_DIR
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+
 from app.api.schemas import InputData
-from app.services.prediction import prepare_input_df, predict
+from app.config import TEMPLATES_DIR
+from app.services.prediction import predict, prepare_input_df
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -29,13 +30,13 @@ def predict_endpoint(request: Request, data: InputData):
         calories_per_min = predict(model, df)
         return {'calories_per_min': calories_per_min}
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except RuntimeError:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    except RuntimeError as e:
         logger.exception('Runtime error during prediction')
-        raise HTTPException(status_code=500, detail='Prediction failed')
-    except Exception:
+        raise HTTPException(status_code=500, detail='Prediction failed') from e
+    except Exception as e:
         logger.exception('Unexpected error during prediction')
-        raise HTTPException(status_code=500, detail='Internal server error')
+        raise HTTPException(status_code=500, detail='Internal server error') from e
 
 @router.get('/', include_in_schema=False)
 def root():
