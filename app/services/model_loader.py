@@ -1,6 +1,7 @@
-from pathlib import Path
-import joblib
 import logging
+from pathlib import Path
+
+import joblib
 
 logger = logging.getLogger(__name__)
 
