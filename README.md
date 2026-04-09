@@ -19,7 +19,7 @@ This project demonstrates a complete ML workflow:
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 The goal is to build a reproducible end-to-end machine learning pipeline and deploy it as a REST API with a simple web interface.
 
@@ -34,7 +34,22 @@ The project separates modeling, service layer, configuration, and presentation l
 
 ---
 
-## 📁 Project Structure
+## Model Performance
+
+Evaluated on a held-out test set (20% split, stratified by activity type):
+
+| Metric | Value |
+|---|---|
+| R² | `~0.93` |
+| MAE (kcal/min) | `~0.47` |
+
+Model: `RandomForestRegressor` wrapped in a full `sklearn` Pipeline with `ColumnTransformer` preprocessing.
+
+---
+
+---
+
+## Project Structure
 ```
 .
 ├── app/
@@ -59,7 +74,7 @@ The project separates modeling, service layer, configuration, and presentation l
 ```
 ---
 
-## ⚙️ Requirements
+## Requirements
 
 - Python 3.9+
 - pip
@@ -69,7 +84,7 @@ The project separates modeling, service layer, configuration, and presentation l
 
 ---
 
-## 📦 Installation
+## Installation
 
 1. Create virtual environment
 ```
@@ -104,7 +119,7 @@ pip install -r requirements-freeze.txt
 
 ---
 
-## 🧠 Model Training
+## Model Training
 
 1. Place your Garmin export file:
 ```
@@ -127,7 +142,7 @@ models/model_metadata.joblib
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 - RandomForestRegressor wrapped in full preprocessing Pipeline
 - Preprocessing handled via ColumnTransformer
@@ -137,7 +152,8 @@ models/model_metadata.joblib
 - REST inference endpoint (/predict)
 
 ---
-## 🌐 Running the API
+
+## Running the API
 
 Start the application:
 ```
@@ -151,7 +167,7 @@ Available endpoints:
 
 ---
 
-## 🔌 Example API Request
+## Example API Request
 
 Example JSON payload
 
@@ -200,7 +216,7 @@ Example response
 
 ---
 
-## 🖥 UI Features
+## UI Features
 
 - Activity selection
 - Dynamic form fields
@@ -211,7 +227,7 @@ Example response
 
 ---
 
-## ⚠️ Error Handling
+## Error Handling
 
 - 400 — validation or input-related error
 - 503 — model not loaded
@@ -221,7 +237,7 @@ Errors are logged using structured logging configuration.
 
 ---
 
-## 🧪 Running Quality Checks
+## Running Quality Checks
 
 ```
 pytest
@@ -238,7 +254,7 @@ Test coverage includes:
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 - FastAPI
 - Pydantic v2
@@ -251,7 +267,7 @@ Test coverage includes:
 
 ---
 
-## 🔒 Data Privacy
+## Data Privacy
 
 Raw Garmin data (`Activities.csv`) is not included in this repository due to personal and health-related information.
 
@@ -261,12 +277,12 @@ To reproduce results:
 
 ---
 
-## 📄 License
+## License
 
 MIT License.
 
 ---
 
-## 👤 Author
+## Author
 
 Developed as part of an academic project and extended into a production-style ML API.
