@@ -41,20 +41,3 @@ dev = [
     "bandit==1.8.6",
     "pip-audit==2.9.0",
 ]
-
-[tool.ruff]
-line-length = 100
-target-version = "py310"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP"]
-ignore = ["E501"]
-
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
-ignore_missing_imports = true
-exclude = ["archive/", "notebooks/"]
-

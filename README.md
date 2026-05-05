@@ -68,10 +68,13 @@ Model: `RandomForestRegressor` wrapped in a full `sklearn` Pipeline with `Column
 ├── notebooks/                 # EDA & modeling notebooks
 ├── tests/                     # Pytest test suite
 │
-├── requirements.txt
+├── archive/                   # Original thesis version
+│
+├── pyproject.toml
 ├── requirements-freeze.txt
 └── README.md
 ```
+
 ---
 
 ## Requirements
