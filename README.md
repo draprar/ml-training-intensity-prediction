@@ -285,4 +285,6 @@ MIT License.
 
 ## Author
 
+[Walery](https://github.com/draprar)
+
 Developed as part of an academic project and extended into a production-style ML API.
