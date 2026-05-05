@@ -107,12 +107,12 @@ source .venv/bin/activate
 
 2. Install runtime dependencies
 ```
-pip install -e .
+pip install .
 ```
 
 Install developer dependencies (tests, lint, typing, security scans):
 ```
-pip install -e ".[dev]"
+pip install ".[dev]"
 ```
 
 If you need exact environment replication for the original research environment:
